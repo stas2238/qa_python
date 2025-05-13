@@ -57,22 +57,28 @@ class TestBooksCollector:
         collector = BooksCollector()
 
 
-        collector.set_book_genre('Неизвестная книга', 'Ужасы')
-        assert collector.get_book_genre('Неизвестная книга') is None
+        collector.set_book_genre('Какая-то книга', 'Ужасы')
+        assert collector.get_book_genre('Какая-то книга') is None
 
     def test_set_book_genre_does_nothing_if_genre_invalid(self):
         collector = BooksCollector()
 
 
         collector.add_new_book('Колобок')
-        collector.set_book_genre('Колобок', 'Фэнтези')
+        collector.set_book_genre('Колобок', 'Фантастистичная')
         assert collector.get_book_genre('Колобок') == ''
 
+    def test_get_book_genre_returns_genre_for_existing_book(self):
+        collector = BooksCollector()
+        collector.add_new_book('Книга1')
+        collector.set_book_genre('Книга1', 'Фантастика')
+        assert collector.get_book_genre('Книга1') == 'Фантастика'
+    
     def test_get_book_genre_returns_none_for_unknown_book(self):
         collector = BooksCollector()
 
 
-        assert collector.get_book_genre('Неизвестная книга') is None
+        assert collector.get_book_genre('Какая-то книга') is None
 
     def test_get_books_with_specific_genre_returns_correct_books(self):
         collector = BooksCollector()
@@ -80,9 +86,12 @@ class TestBooksCollector:
 
         collector.add_new_book('Книга1')
         collector.add_new_book('Книга2')
+        collector.add_new_book('Книга3')
         collector.set_book_genre('Книга1', 'Фантастика')
         collector.set_book_genre('Книга2', 'Фантастика')
+        collector.set_book_genre('Книга3', 'Детективы')
         assert set(collector.get_books_with_specific_genre('Фантастика')) == {'Книга1', 'Книга2'}
+        assert 'Книга3' not in collector.get_books_with_specific_genre('Фантастика')
 
     def test_get_books_with_specific_genre_returns_empty_list_for_invalid_genre(self):
         collector = BooksCollector()
@@ -97,8 +106,8 @@ class TestBooksCollector:
 
 
         collector.add_new_book('Книга1')
-        assert isinstance(collector.get_books_genre(), dict)
-
+        assert 'Книга1' in collector.get_books_genre()
+    
     def test_get_books_for_children_returns_only_child_friendly_books(self):
         collector = BooksCollector()
 
@@ -147,7 +156,7 @@ class TestBooksCollector:
 
 
         collector.add_new_book('Книга1')
-        collector.delete_book_from_favorites('Книга1')  # не было в избранном
+        collector.delete_book_from_favorites('Книга1')
         assert collector.get_list_of_favorites_books() == []
 
     def test_get_list_of_favorites_books_returns_list(self):
@@ -156,4 +165,4 @@ class TestBooksCollector:
 
         collector.add_new_book('Книга1')
         collector.add_book_in_favorites('Книга1')
-        assert isinstance(collector.get_list_of_favorites_books(), list)
+        assert collector.get_list_of_favorites_books() == ['Книга1']
